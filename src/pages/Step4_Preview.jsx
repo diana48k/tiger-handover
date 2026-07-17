@@ -73,6 +73,9 @@ const Step4_Preview = ({ projectData, doors, signatures, onBack, handleSavePDF, 
             <div className="absolute top-0 right-0 w-64 h-64 bg-[#C10016] rounded-bl-full opacity-5"></div>
             <div className="absolute bottom-0 left-0 w-full h-4 bg-[#1A1A1B]"></div>
             <div className="flex-grow flex flex-col justify-center items-center text-center px-10">
+              <div className="mb-6 flex justify-center items-center">
+                <img src="/LOGO.png" alt="Company Logo" className="max-h-24 max-w-[200px] object-contain" />
+              </div>
               <h1 className="text-4xl font-extrabold text-[#1A1A1B] mb-6 tracking-wide">{t('coverTitle')}</h1>
               <h2 className="text-xl font-bold text-gray-700 mb-2">{t('coverProjectLabel')} {projectData.projectName}</h2>
               <div className="w-16 h-1 bg-[#C10016] my-8"></div>
@@ -87,47 +90,79 @@ const Step4_Preview = ({ projectData, doors, signatures, onBack, handleSavePDF, 
           </div>
 
           {/* PAGE 2 - Letter */}
-          <div className="a4-page bg-white relative flex flex-col mx-auto shadow-md" style={{ width: '210mm', minHeight: '297mm', height: 'auto', padding: '15mm 20mm', boxSizing: 'border-box' }}>
-            <h1 className="text-xl font-bold text-center mb-8 text-[#1A1A1B]">{t('letterTitle')}</h1>
-            <div className="text-[13px] text-gray-800 flex-grow font-medium" style={{ lineHeight: '1.8' }}>
-              <div className="text-right text-gray-600 mb-6">{t('letterDatePrefix')} {formatDate(projectData.endDate || projectData.date)}</div>
-              <div className="space-y-2 mb-6">
-                <div className="flex items-start"><span className="font-bold w-16 text-[#1A1A1B] shrink-0">{t('letterSubject')}</span><span>{lang === 'th' ? `ส่งมอบงาน "${projectData.projectName}"` : `Handover of "${projectData.projectName}"`}</span></div>
-                <div className="flex items-start"><span className="font-bold w-16 text-[#1A1A1B] shrink-0">{t('letterTo')}</span><span>{projectData.clientName}</span></div>
-                <div className="flex items-start"><span className="font-bold w-16 text-[#1A1A1B] shrink-0">{t('letterRef')}</span><span>{lang === 'th' ? `เอกสารใบสั่งซื้อสินค้าและบริการ เลขที่ ${projectData.orderNo}` : `Service Purchase Order Document No. ${projectData.orderNo}`}</span></div>
-              </div>
-              <div className="space-y-4 text-left">
+          <div className="a4-page bg-white relative mx-auto shadow-md" style={{ width: '210mm', minHeight: '297mm', height: 'auto', padding: '15mm 20mm 30mm 20mm', boxSizing: 'border-box', position: 'relative' }}>
+            <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+              <img src="/LOGO.png" alt="Company Logo" style={{ maxHeight: '64px', maxWidth: '150px', objectFit: 'contain', margin: '0 auto 8px' }} />
+              <h1 style={{ fontSize: '20px', fontWeight: 'bold', color: '#1A1A1B', margin: 0 }}>{t('letterTitle')}</h1>
+            </div>
+            
+            <div style={{ fontSize: '13px', color: '#1F2937', lineHeight: '1.8' }}>
+              <div style={{ textAlign: 'right', color: '#4B5563', marginBottom: '24px' }}>{t('letterDatePrefix')} {formatDate(projectData.endDate || projectData.date)}</div>
+              
+              <table style={{ width: '100%', borderCollapse: 'collapse', border: 'none', marginBottom: '24px', fontSize: '13px', color: '#1F2937' }}>
+                <tbody>
+                  <tr>
+                    <td style={{ width: '64px', fontWeight: 'bold', color: '#1A1A1B', verticalAlign: 'top', padding: '4px 0', textAlign: 'left' }}>{t('letterSubject')}</td>
+                    <td style={{ verticalAlign: 'top', padding: '4px 0', textAlign: 'left' }}>{lang === 'th' ? `ส่งมอบงาน "${projectData.projectName}"` : `Handover of "${projectData.projectName}"`}</td>
+                  </tr>
+                  <tr>
+                    <td style={{ fontWeight: 'bold', color: '#1A1A1B', verticalAlign: 'top', padding: '4px 0', textAlign: 'left' }}>{t('letterTo')}</td>
+                    <td style={{ verticalAlign: 'top', padding: '4px 0', textAlign: 'left' }}>{projectData.clientName}</td>
+                  </tr>
+                  <tr>
+                    <td style={{ fontWeight: 'bold', color: '#1A1A1B', verticalAlign: 'top', padding: '4px 0', textAlign: 'left' }}>{t('letterRef')}</td>
+                    <td style={{ verticalAlign: 'top', padding: '4px 0', textAlign: 'left' }}>{lang === 'th' ? `เอกสารใบสั่งซื้อสินค้าและบริการ เลขที่ ${projectData.orderNo}` : `Service Purchase Order Document No. ${projectData.orderNo}`}</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div style={{ textAlign: 'left' }}>
                 {lang === 'th' ? (
-                  <p><span className="inline-block w-10"></span>ตามที่ {projectData.clientName} ได้เป็นผู้ว่าจ้างติดตั้งระบบ {projectData.projectName} จำนวน {doors.length} ประตู ได้แก่</p>
+                  <p style={{ textIndent: '36px', marginBottom: '12px' }}>ตามที่ {projectData.clientName} ได้เป็นผู้ว่าจ้างให้ {companyName} ดำเนินการติดตั้งระบบ {projectData.projectName} จำนวน {doors.length} ประตู ได้แก่</p>
                 ) : (
-                  <p><span className="inline-block w-10"></span>According to your request for system installation of {projectData.projectName} for {doors.length} doors, namely:</p>
+                  <p style={{ textIndent: '36px', marginBottom: '12px' }}>According to the contract where {projectData.clientName} engaged {companyName} to install the {projectData.projectName} system for {doors.length} doors, namely:</p>
                 )}
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 pl-10 font-semibold text-[#C10016]">
-                  {doors.map((d, i) => (<div key={d.id}>{i + 1}. {d.name}</div>))}
-                </div>
-                
-                <p className="pl-10">{lang === 'th' ? `กับ ${companyName}` : `to ${companyName}`}</p>
+                <table style={{ width: '100%', marginLeft: '36px', marginBottom: '16px', borderCollapse: 'collapse', border: 'none', color: '#C10016', fontWeight: '600' }}>
+                  <tbody>
+                    {Array.from({ length: Math.ceil(doors.length / 2) }).map((_, rowIndex) => {
+                      const d1 = doors[rowIndex * 2];
+                      const d2 = doors[rowIndex * 2 + 1];
+                      return (
+                        <tr key={rowIndex}>
+                          <td style={{ width: '50%', padding: '4px 0', textAlign: 'left' }}>
+                            {d1 ? `${rowIndex * 2 + 1}. ${d1.name}` : ''}
+                          </td>
+                          <td style={{ width: '50%', padding: '4px 0', textAlign: 'left' }}>
+                            {d2 ? `${rowIndex * 2 + 2}. ${d2.name}` : ''}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
                 
                 {lang === 'th' ? (
-                  <p><span className="inline-block w-10"></span>บัดนี้ บริษัทฯ ได้ดำเนินการติดตั้งแล้วเสร็จถูกต้องตามแบบ และรายละเอียดทุกประการ จึงมีความประสงค์ขอส่งมอบงานที่ได้ดำเนินการแล้วเสร็จนี้ให้กับ {projectData.clientName}</p>
+                  <p style={{ textIndent: '36px', marginBottom: '12px' }}>บัดนี้ บริษัทฯ ได้ดำเนินการติดตั้งแล้วเสร็จถูกต้องตามแบบ และรายละเอียดทุกประการ จึงมีความประสงค์ขอส่งมอบงานที่ได้ดำเนินการแล้วเสร็จนี้ให้กับ {projectData.clientName}</p>
                 ) : (
-                  <p><span className="inline-block w-10"></span>We hereby certify that the company has successfully completed the installation in accordance with all drawings and specifications. We now wish to formally hand over the completed work to {projectData.clientName}</p>
+                  <p style={{ textIndent: '36px', marginBottom: '12px' }}>We hereby certify that the company has successfully completed the installation in accordance with all drawings and specifications. We now wish to formally hand over the completed work to {projectData.clientName}</p>
                 )}
                 
-                <p><span className="inline-block w-10"></span>{t('letterBody6')}</p>
+                <p style={{ textIndent: '36px', marginBottom: '24px' }}>{t('letterBody6')}</p>
               </div>
             </div>
-            <div className="mt-10 text-center w-56 ml-auto mr-10">
-              <p className="mb-2 text-gray-600 text-[13px]">{t('letterSincerely')}</p>
-              <div className="h-16 flex items-end justify-center mb-1">
-                {signatures.tech && <img src={signatures.tech} alt="Tech Sig" className="max-h-full object-contain" />}
+            
+            <div style={{ marginTop: '40px', textAlign: 'center', width: '220px', marginLeft: 'auto', marginRight: '40px' }}>
+              <p style={{ marginBottom: '8px', color: '#4B5563', fontSize: '13px' }}>{t('letterSincerely')}</p>
+              <div style={{ height: '64px', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', marginBottom: '4px' }}>
+                {signatures.tech && <img src={signatures.tech} alt="Tech Sig" style={{ maxHeight: '100%', objectFit: 'contain' }} />}
               </div>
-              <p className="border-t border-gray-300 pt-2 font-bold text-[#1A1A1B] text-[13px]">ลงชื่อ {projectData.techName}</p>
-              <p className="text-xs text-gray-500">{t('letterDelivererLabel')}</p>
+              <p style={{ borderTop: '1px solid #D1D5DB', paddingTop: '8px', fontWeight: 'bold', color: '#1A1A1B', fontSize: '13px', margin: 0 }}>ลงชื่อ {projectData.techName}</p>
+              <p style={{ fontSize: '12px', color: '#6B7280', margin: '2px 0 0' }}>{t('letterDelivererLabel')}</p>
             </div>
-            <div className="mt-auto pt-4 border-t border-gray-200 text-center text-[11px] text-gray-400">
-              <span className="font-bold text-[#1A1A1B]">{companyName}</span> <br />
+            
+            <div style={{ position: 'absolute', bottom: '15mm', left: '20mm', right: '20mm', paddingTop: '16px', borderTop: '1px solid #E5E7EB', textAlign: 'center', fontSize: '11px', color: '#9CA3AF', lineHeight: '1.5' }}>
+              <span style={{ fontWeight: 'bold', color: '#1A1A1B' }}>{companyName}</span> <br />
               {companyAddress}
             </div>
           </div>
@@ -193,8 +228,8 @@ const Step4_Preview = ({ projectData, doors, signatures, onBack, handleSavePDF, 
             <div className="bg-[#F8F9FA] p-6 rounded border border-gray-200 mb-10 mx-6">
               {lang === 'th' ? (
                 <>
-                  <p className="text-[15px] mb-3 text-center text-[#1A1A1B]">
-                    ข้าพเจ้า <strong className="border-b border-dotted border-gray-500 pb-1 px-4">{signatures.clientName || '...........................................'}</strong> ในนามของ <strong>{projectData.clientName}</strong>
+                  <p className="text-[15px] mb-3 text-center text-[#1A1A1B] leading-relaxed">
+                    ข้าพเจ้า <span className="underline decoration-dotted underline-offset-4 font-bold px-2">{signatures.clientName || '...........................................'}</span> ในนามของ <strong className="font-bold">{projectData.clientName}</strong>
                   </p>
                   <p className="text-center text-[13px] text-gray-600 leading-relaxed">
                     ขอรับรองว่าได้รับการส่งมอบงานติดตั้ง และอุปกรณ์ทั้งหมดตามที่ระบุไว้ในเอกสารฉบับนี้<br />
@@ -203,8 +238,8 @@ const Step4_Preview = ({ projectData, doors, signatures, onBack, handleSavePDF, 
                 </>
               ) : (
                 <>
-                  <p className="text-[15px] mb-3 text-center text-[#1A1A1B]">
-                    I, <strong className="border-b border-dotted border-gray-500 pb-1 px-4">{signatures.clientName || '...........................................'}</strong> on behalf of <strong>{projectData.clientName}</strong>
+                  <p className="text-[15px] mb-3 text-center text-[#1A1A1B] leading-relaxed">
+                    I, <span className="underline decoration-dotted underline-offset-4 font-bold px-2">{signatures.clientName || '...........................................'}</span> on behalf of <strong className="font-bold">{projectData.clientName}</strong>
                   </p>
                   <p className="text-center text-[13px] text-gray-600 leading-relaxed">
                     hereby certify that I have received all the installation work and equipment specified in this document,<br />

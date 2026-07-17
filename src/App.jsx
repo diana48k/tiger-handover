@@ -40,12 +40,29 @@ const saveHistoryEntry = async (projectData, doors, synced) => {
 };
 
 const CSS_STYLES = `
-  body, .font-body, button, input, select, textarea {
-    font-family: 'Noto Sans Thai', 'Poppins', sans-serif !important;
+  body, .font-body, button, input, select, textarea, #pdf-content, #pdf-content * {
+    font-family: 'Sarabun', 'Noto Sans Thai', 'Poppins', sans-serif !important;
     line-height: 1.6 !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
   .animate-fadeIn { animation: fadeIn 0.25s ease-out; }
+
+  #pdf-content * {
+    letter-spacing: 0 !important;
+    word-spacing: 0 !important;
+  }
+  #pdf-content table td, #pdf-content table th {
+    line-height: 1.4 !important;
+  }
+  #pdf-content p, #pdf-content h1, #pdf-content h2, #pdf-content h3, #pdf-content span, #pdf-content div {
+    line-height: 1.6 !important;
+  }
+  #pdf-content p {
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+  }
 
   @media print {
     @page { size: A4 portrait; margin: 0; }
@@ -60,6 +77,7 @@ const CSS_STYLES = `
       width: 210mm !important; min-height: 297mm !important; height: auto !important; max-height: none !important;
       padding: 15mm 20mm !important; box-sizing: border-box !important; background: white !important;
       position: relative; overflow: visible !important;
+      font-family: 'Sarabun', 'Noto Sans Thai', 'Poppins', sans-serif !important;
     }
     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   }
@@ -67,8 +85,10 @@ const CSS_STYLES = `
 
 const SIMPLE_CSS = `
   body, .font-body, button, input, select, textarea {
-    font-family: 'Noto Sans Thai', 'Poppins', sans-serif !important;
+    font-family: 'Sarabun', 'Noto Sans Thai', 'Poppins', sans-serif !important;
     line-height: 1.6 !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
   .animate-fadeIn { animation: fadeIn 0.25s ease-out; }
@@ -341,11 +361,40 @@ export default function App() {
     const originalAlign = element.style.alignItems;
     element.style.width = 'max-content';
     element.style.alignItems = 'flex-start';
+
+    // Retrieve client name for PDF filename
+    const clientName = projectData.clientName || '';
+    const cleanFilename = clientName.replace(/[<>:"/\\|?*\x00-\x1F]/g, '_').trim() || `Handover_${projectData.orderNo}`;
+
     setTimeout(() => {
       window.html2pdf().set({
-        margin: 0, filename: `Handover_${projectData.orderNo}.pdf`,
+        margin: 0,
+        filename: `${cleanFilename}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollY: 0 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          scrollY: 0,
+          letterRendering: false,
+          onclone: (clonedDoc) => {
+            // Copy all link and style elements to cloned document head to ensure stylesheets & fonts are active
+            const clonedHead = clonedDoc.head || clonedDoc.getElementsByTagName('head')[0];
+            if (clonedHead) {
+              document.head.querySelectorAll('link, style').forEach(el => {
+                clonedHead.appendChild(el.cloneNode(true));
+              });
+            }
+            // Copy loaded fonts from document to cloned document to resolve double rendering text overlaps
+            try {
+              document.fonts.forEach(font => {
+                clonedDoc.fonts.add(font);
+              });
+            } catch (err) {
+              console.warn('Could not copy FontFaces directly:', err);
+            }
+          }
+        },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak: { mode: ['css', 'legacy'] }
       }).from(element).save().then(() => {

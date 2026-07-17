@@ -19,7 +19,7 @@ const openDB = () => {
 export const dbSetItem = async (key, value) => {
   try {
     const db = await openDB();
-    return new Promise((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
       const transaction = db.transaction(STORE_NAME, 'readwrite');
       const store = transaction.objectStore(STORE_NAME);
       const request = store.put(value, key);
@@ -30,8 +30,10 @@ export const dbSetItem = async (key, value) => {
     console.error('IndexedDB write failed, falling back to localStorage', err);
     try {
       localStorage.setItem(key, JSON.stringify(value));
+      return true;
     } catch (localErr) {
       console.error('localStorage write failed too', localErr);
+      throw new Error('Database write failed: ' + (err.message || localErr.message || 'unknown error'));
     }
   }
 };
@@ -65,7 +67,7 @@ export const dbGetItem = async (key) => {
 export const dbRemoveItem = async (key) => {
   try {
     const db = await openDB();
-    return new Promise((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
       const transaction = db.transaction(STORE_NAME, 'readwrite');
       const store = transaction.objectStore(STORE_NAME);
       const request = store.delete(key);
@@ -74,6 +76,12 @@ export const dbRemoveItem = async (key) => {
     });
   } catch (err) {
     console.error('IndexedDB delete failed, falling back to localStorage', err);
-    localStorage.removeItem(key);
+    try {
+      localStorage.removeItem(key);
+      return true;
+    } catch (localErr) {
+      console.error('localStorage delete failed too', localErr);
+      throw new Error('Database delete failed: ' + (err.message || localErr.message || 'unknown error'));
+    }
   }
 };
